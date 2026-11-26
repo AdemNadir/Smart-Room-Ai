@@ -1,0 +1,5 @@
+room_id,day,start_time,end_time,course,group_code
+A101,monday,08:00,10:00,CS101,L1-G1
+A102,tuesday,10:00,12:00,CS202,L2-G3
+B204,wednesday,14:00,16:00,PHY301,L3-G2
+C301,thursday,09:00,11:00,BIO110,L1-G4

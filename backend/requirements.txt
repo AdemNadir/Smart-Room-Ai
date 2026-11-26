@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+python-multipart
+pydantic
+openpyxl
+defusedxml
+tzdata
+pytest
+httpx
+pip-audit
