@@ -1,0 +1,12 @@
+fastapi
+uvicorn
+sqlalchemy
+aiosqlite
+transformers
+torch
+sentencepiece
+pandas
+openpyxl
+pydantic
+python-multipart
+psycopg2-binary  # optional PostgreSQL support

@@ -1,0 +1,8 @@
+room_id,room_name,capacity,room_type,building,equipment,active
+A101,Classroom A101,40,classroom,Block A,"projector,whiteboard",true
+A102,Classroom A102,30,classroom,Block A,"whiteboard",true
+B201,Lab B201,25,lab,Block B,"computer,audio",true
+B202,Lab B202,35,lab,Block B,"computer,projector,audio",true
+C301,Auditorium C301,100,amphitheatre,Block C,"projector,audio,video_conference",true
+C302,Classroom C302,50,classroom,Block C,"projector,whiteboard",true
+D101,Office D101,10,office,Block D,"computer",false
