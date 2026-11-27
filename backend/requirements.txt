@@ -1,5 +1,6 @@
 fastapi
 uvicorn
+<<<<<<< HEAD
 sqlalchemy
 aiosqlite
 transformers
@@ -10,3 +11,13 @@ openpyxl
 pydantic
 python-multipart
 psycopg2-binary  # optional PostgreSQL support
+=======
+python-multipart
+pydantic
+openpyxl
+defusedxml
+tzdata
+pytest
+httpx
+pip-audit
+>>>>>>> 61bfbd9e60e235fd6437d82e5264d78e6efb5b3f

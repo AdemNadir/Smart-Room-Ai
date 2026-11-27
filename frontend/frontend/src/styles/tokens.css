@@ -1,0 +1,58 @@
+:root {
+  --navy-900: #102437;
+  --navy-800: #16304a;
+  --navy-700: #1f4467;
+  --blue-600: #1f5e8c;
+  --blue-100: #e7eff5;
+
+  --ivory-50: #fbf9f4;
+  --ivory-100: #f6f2e9;
+  --paper: #ffffff;
+  --ink: #17283a;
+  --muted: #5f6c78;
+  --muted-light: #7c8791;
+  --line: #d8dce0;
+  --line-soft: #e9e6df;
+
+  --gold-600: #9a7a43;
+  --gold-500: #b08d57;
+  --gold-100: #f1e8d7;
+
+  --success: #1f7353;
+  --success-bg: #e6f1ec;
+  --warning: #9a640e;
+  --warning-bg: #fbf0dc;
+  --danger: #9e3b3b;
+  --danger-bg: #f8e8e7;
+  --focus: #c08a2e;
+
+  --font-display: 'Cormorant Garamond', 'Noto Sans Arabic', Georgia, serif;
+  --font-ui: 'Inter', 'Noto Sans Arabic', system-ui, -apple-system, sans-serif;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+
+  --radius-1: 2px;
+  --radius-2: 4px;
+  --radius-3: 8px;
+  --radius-4: 12px;
+
+  --shadow-panel: 0 1px 2px rgba(16, 36, 55, 0.06), 0 12px 28px rgba(16, 36, 55, 0.05);
+  --shadow-lift: 0 18px 48px rgba(16, 36, 55, 0.16);
+
+  --text-hero: clamp(2.4rem, 4vw, 4.1rem);
+  --text-page: clamp(2rem, 3vw, 3.1rem);
+  --text-section: 1.45rem;
+  --text-card: 1.2rem;
+  --text-body: 0.95rem;
+  --text-label: 0.78rem;
+  --text-small: 0.76rem;
+
+  --content-max: 1240px;
+}
