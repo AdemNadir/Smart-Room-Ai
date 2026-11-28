@@ -1,0 +1,86 @@
+/* Reset + global defaults. Uses logical properties so right-to-left (Arabic) works unchanged. */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  isolation: isolate;
+  margin: 0;
+  min-height: 100dvh;
+  font-family: var(--font-sans);
+  font-size: var(--fs-sm);
+  line-height: var(--lh-body);
+  color: var(--c-ink);
+  background-color: var(--c-canvas);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  transition: background-color var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+
+/* Soft colour behind the page, on its own fixed layer (iOS Safari ignores background-attachment: fixed). */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    radial-gradient(60rem 40rem at 8% -10%, var(--canvas-tint-1), transparent 70%),
+    radial-gradient(50rem 36rem at 100% 105%, var(--canvas-tint-2), transparent 70%);
+  transition: opacity var(--dur) var(--ease);
+}
+
+h1, h2, h3, h4, p { margin: 0; }
+h1, h2, h3, h4 { line-height: var(--lh-tight); letter-spacing: -0.01em; font-weight: 650; }
+
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+img, svg { display: block; max-inline-size: 100%; }
+
+:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+  border-radius: var(--r-sm);
+}
+
+::selection { background: var(--c-accent-soft); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  /* Disable smooth scrolling when reduced motion is preferred */
+  html {
+    scroll-behavior: auto !important;
+  }
+}
+
+.sr-only {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* RTL adjustments */
+[dir="rtl"] {
+  /* Ensure flex/grid layouts mirror correctly */
+}
+
+/* Smooth theme transitions */
+* {
+  transition: background-color var(--dur) var(--ease),
+              border-color var(--dur) var(--ease),
+              color var(--dur) var(--ease),
+              box-shadow var(--dur) var(--ease);
+}

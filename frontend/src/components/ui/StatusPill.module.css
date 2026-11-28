@@ -1,0 +1,39 @@
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: 0.28rem 0.7rem 0.28rem 0.6rem;
+  border-radius: var(--r-pill);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+/* The shape differs per status so meaning never depends on colour alone. */
+.mark { flex: none; inline-size: 0.5rem; block-size: 0.5rem; background: currentColor; }
+
+.available { color: var(--s-available); background: var(--s-available-bg); }
+.available .mark { border-radius: 50%; }                       /* ● filled circle */
+
+.occupied { color: var(--s-occupied); background: var(--s-occupied-bg); }
+.occupied .mark { border-radius: 2px; }                        /* ■ square */
+
+.booked { color: var(--s-booked); background: var(--s-booked-bg); }
+.booked .mark { border-radius: 1px; transform: rotate(45deg) scale(0.9); }  /* ◆ diamond */
+
+.pending { color: var(--s-pending); background: var(--s-pending-bg); }
+.pending .mark { border-radius: 50%; background: transparent; border: 2px solid currentColor; }  /* ○ ring */
+
+.inactive { color: var(--s-inactive); background: var(--s-inactive-bg); }
+.inactive .mark { inline-size: 0.55rem; block-size: 2px; border-radius: 1px; }  /* – dash */
+
+/* Compact size for dense rows. */
+.sm { gap: var(--sp-1); padding: 0.18rem 0.5rem 0.18rem 0.42rem; font-size: 0.6875rem; }
+.sm .mark { inline-size: 0.4rem; block-size: 0.4rem; }
+
+/* Neutral tints, applied on top of a status colour. */
+.accent { color: var(--c-accent); background: var(--c-accent-soft); }
+.glass { background: var(--glass-bg); color: var(--c-ink-2); }
+.solid { background: var(--c-surface); color: var(--c-ink-2); }
+.default { background: transparent; color: var(--c-ink-2); }

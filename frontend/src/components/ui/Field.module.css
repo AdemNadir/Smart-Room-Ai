@@ -1,0 +1,40 @@
+.field { display: grid; gap: var(--sp-2); }
+
+.label { font-size: var(--fs-xs); font-weight: 600; color: var(--c-ink-2); }
+
+.wrap { position: relative; }
+
+.control {
+  inline-size: 100%;
+  min-block-size: var(--touch);
+  padding-inline: var(--sp-4);
+  border: 1px solid var(--c-line-strong);
+  border-radius: var(--r-md);
+  background: var(--glass-bg-strong);
+  color: var(--c-ink);
+  font-size: var(--fs-md);
+  transition: border-color var(--dur-fast) var(--ease), box-shadow var(--dur) var(--ease);
+}
+.control::placeholder { color: var(--c-ink-3); }
+.control:hover { border-color: var(--c-ink-3); }
+.control:focus-visible {
+  outline: none;
+  border-color: var(--c-accent);
+  box-shadow: 0 0 0 3px var(--c-accent-soft);
+  border-radius: var(--r-md);
+}
+.control[aria-invalid="true"] { border-color: var(--c-danger); }
+.control:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.hint { font-size: var(--fs-xs); color: var(--c-ink-3); }
+.error { font-size: var(--fs-xs); color: var(--c-danger); font-weight: 500; }
+
+/* Room for the trailing control so typed text never runs underneath it. */
+.hasTrailing { padding-inline-end: calc(var(--touch) + var(--sp-1)); }
+.trailing {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-end: var(--sp-1);
+  display: flex;
+  align-items: center;
+}

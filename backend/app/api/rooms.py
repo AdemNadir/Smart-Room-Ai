@@ -113,45 +113,56 @@ def ai_parse(req: AIParseRequest):
 @router.post("/ai-search")
 def ai_search(req: AIParseRequest):
     from datetime import date, time
-    criteria = parser.parse(req.text)
-    if not criteria.session_date:
-        raise HTTPException(status_code=400, detail="Could not resolve date")
+    print(f"[DEBUG] Received AI search request: {req.text}")
+    try:
+        criteria = parser.parse(req.text)
+        print(f"[DEBUG] Parsed criteria: {criteria}")
+        if not criteria.session_date:
+            raise HTTPException(status_code=400, detail="Could not resolve date")
 
-    available = db.search_available_rooms(
-        session_date=criteria.session_date,
-        start_time=criteria.start_time or time(9, 0),
-        end_time=criteria.end_time or time(17, 0),
-        min_capacity=criteria.student_count or 0,
-        required_equipment=criteria.required_equipment,
-        preferred_room_type=criteria.room_type,
-    )
+        available = db.search_available_rooms(
+            session_date=criteria.session_date,
+            start_time=criteria.start_time or time(9, 0),
+            end_time=criteria.end_time or time(17, 0),
+            min_capacity=criteria.student_count or 0,
+            required_equipment=criteria.required_equipment,
+            preferred_room_type=criteria.room_type,
+        )
+        print(f"[DEBUG] Available rooms: {len(available)}")
 
-    ranked = recommender.recommend(
-        available_rooms=available,
-        student_count=criteria.student_count or 0,
-        required_equipment=criteria.required_equipment,
-        preferred_room_type=criteria.room_type,
-        session_date=criteria.session_date,
-        start_time=criteria.start_time or time(9, 0),
-        end_time=criteria.end_time or time(17, 0),
-        database=db,
-    )
+        ranked = recommender.recommend(
+            available_rooms=available,
+            student_count=criteria.student_count or 0,
+            required_equipment=criteria.required_equipment,
+            preferred_room_type=criteria.room_type,
+            session_date=criteria.session_date,
+            start_time=criteria.start_time or time(9, 0),
+            end_time=criteria.end_time or time(17, 0),
+            database=db,
+        )
 
-    results = []
-    for item in ranked[:5]:
-        room = item["room"]
-        results.append({
-            "room_id": room["room_id"],
-            "room_name": room["room_name"],
-            "capacity": room["capacity"],
-            "room_type": room["room_type"],
-            "building": room["building"],
-            "equipment": room["equipment"],
-            "score": item["score"],
-            "reasons": item["reasons"],
-        })
+        results = []
+        for item in ranked[:5]:
+            room = item["room"]
+            results.append({
+                "room_id": room["room_id"],
+                "room_name": room["room_name"],
+                "capacity": room["capacity"],
+                "room_type": room["room_type"],
+                "building": room["building"],
+                "equipment": room["equipment"],
+                "score": item["score"],
+                "reasons": item["reasons"],
+            })
 
-    return {
-        "criteria": criteria.to_dict(),
-        "available_rooms": results,
-    }
+        return {
+            "criteria": criteria.to_dict(),
+            "available_rooms": results,
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"[ERROR] AI search failed: {e}")
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=str(e))

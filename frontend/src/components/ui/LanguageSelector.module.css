@@ -1,0 +1,104 @@
+.wrapper {
+  position: relative;
+  display: inline-flex;
+}
+
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  min-block-size: var(--touch);
+  padding-inline: var(--sp-3);
+  border-radius: var(--r-md);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--c-ink);
+  white-space: nowrap;
+  transition: background-color var(--dur-fast) var(--ease);
+}
+
+.trigger:hover {
+  background: var(--glass-bg-strong);
+}
+
+.current {
+  max-inline-size: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chevron {
+  flex-shrink: 0;
+  transition: transform var(--dur-fast) var(--ease);
+}
+
+.trigger[aria-expanded="true"] .chevron {
+  transform: rotate(180deg);
+}
+
+.dropdown {
+  position: absolute;
+  top: calc(100% + var(--sp-1));
+  inset-inline-end: 0;
+  z-index: 100;
+  min-inline-size: 160px;
+  border-radius: var(--r-md);
+  overflow: hidden;
+  box-shadow: var(--glass-shadow);
+  animation: fadeIn var(--dur-fast) var(--ease);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  width: 100%;
+  padding: var(--sp-2) var(--sp-3);
+  border: none;
+  background: transparent;
+  font-size: var(--fs-sm);
+  color: var(--c-ink);
+  text-align: start;
+  transition: background-color var(--dur-fast) var(--ease);
+}
+
+.option:hover {
+  background: var(--c-accent-soft);
+}
+
+.option:focus-visible {
+  outline: none;
+  background: var(--c-accent-soft);
+}
+
+.label {
+  flex: 1;
+}
+
+.check {
+  flex-shrink: 0;
+  color: var(--c-accent);
+}
+
+/* RTL adjustments */
+.rtl .trigger {
+  flex-direction: row-reverse;
+}
+
+.rtl .dropdown {
+  inset-inline-end: auto;
+  inset-inline-start: 0;
+}

@@ -1,7 +1,7 @@
 import json
 import httpx
 import os
-from typing import Optional, Dict, Any, List
+from typing import Optional, Dict, Any
 
 
 class OllamaProvider:
@@ -11,18 +11,20 @@ class OllamaProvider:
 
     Config via environment variables:
     - OLLAMA_BASE_URL: Ollama server base URL (default: http://localhost:11434)
-    - OLLAMA_MODEL: Ollama model name (default: llama3.2:1b)
-    - OLLAMA_TEMPERATURE: sampling temperature (default: 0.3)
-    - OLLAMA_TIMEOUT: timeout seconds (default: 30)
+    - OLLAMA_MODEL: Ollama model name (default: llama3.2:3b — good for 6GB+ RAM systems)
+    - OLLAMA_TEMPERATURE: sampling temperature (default: 0.2)
+    - OLLAMA_NUM_PREDICT: max tokens per response (default: 512)
+    - OLLAMA_TIMEOUT: timeout seconds (default: 60)
     """
 
     def __init__(self, base_url: str = None,
                  model: str = None, temperature: float = None,
-                 timeout: int = None):
+                 num_predict: int = None, timeout: int = None):
         self.base_url = (base_url or os.environ.get("OLLAMA_BASE_URL", "http://localhost:11434")).rstrip("/")
-        self.model = model or os.environ.get("OLLAMA_MODEL", "llama3.2:1b")
-        self.temperature = temperature or float(os.environ.get("OLLAMA_TEMPERATURE", 0.3))
-        self.timeout = timeout or int(os.environ.get("OLLAMA_TIMEOUT", 30))
+        self.model = model or os.environ.get("OLLAMA_MODEL", "llama3.2:3b")
+        self.temperature = temperature if temperature is not None else float(os.environ.get("OLLAMA_TEMPERATURE", "0.2"))
+        self.num_predict = num_predict if num_predict is not None else int(os.environ.get("OLLAMA_NUM_PREDICT", "512"))
+        self.timeout = timeout or int(os.environ.get("OLLAMA_TIMEOUT", "60"))
         self._client = httpx.Client(base_url=self.base_url, timeout=self.timeout)
         self.available = self._check_available()
 
@@ -38,6 +40,7 @@ class OllamaProvider:
         if not self.available:
             return False
         try:
+            # Verify the model is actually pulled/available
             resp = self._client.get("/api/generate", timeout=10)
             return resp.status_code == 200
         except Exception:
@@ -55,11 +58,10 @@ class OllamaProvider:
             "prompt": prompt,
             "stream": False,
             "temperature": temperature if temperature is not None else self.temperature,
+            "num_predict": max_tokens if max_tokens is not None else self.num_predict,
         }
         if system:
             payload["system"] = system
-        if max_tokens:
-            payload["num_predict"] = max_tokens
 
         try:
             resp = self._client.post("/api/generate", json=payload)

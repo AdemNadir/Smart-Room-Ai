@@ -1,0 +1,25 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-block-size: var(--touch);
+  inline-size: var(--touch);
+  border-radius: var(--r-md);
+  color: var(--c-ink);
+  transition:
+    background-color var(--dur-fast) var(--ease),
+    transform var(--dur-fast) var(--ease);
+}
+
+.button:hover {
+  background: var(--glass-bg-strong);
+}
+
+.button:active {
+  transform: scale(0.95);
+}
+
+.button:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}

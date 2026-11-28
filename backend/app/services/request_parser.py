@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import json
 import re
 from datetime import date, time, timedelta
@@ -41,7 +40,7 @@ class RequestParser:
 
     # Equipment keywords in multiple languages
     EQUIPMENT_KEYWORDS = {
-        "projector": ["projector", "projecteur", "projecteur vidéo", "projecteur vidéo", "projector", "projecteur", "مشروع", "بروجيكتور"],
+        "projector": ["projector", "projecteur", "projecteur vidéo", "projecteur", "مشروع", "بروجيكتور", "جهاز عرض", "عرض"],
         "whiteboard": ["whiteboard", "tableau blanc", "tableau", "board", "لوحة بيضاء", "سبورة"],
         "computer": ["computer", "ordinateur", "pc", "pc portable", "laptop", "حاسوب", "كمبيوتر"],
         "audio": ["audio", "son", "sound", "microphone", "mic", "micro", "صوت", "ميكروفون"],
@@ -50,50 +49,58 @@ class RequestParser:
     }
 
     ROOM_TYPES = {
-        "lecture": ["lecture", "amphi", "amphitheatre", "amphitheater", "grand amphithéâtre", "قاعة محاضرات", "مدرج"],
-        "classroom": ["classroom", "salle de classe", "class", "classe", "salle", "قاعة", "فصل"],
-        "lab": ["lab", "laboratory", "laboratoire", "tp", "travaux pratiques", "مختبر", "معمل"],
+        "lecture": ["lecture", "amphi", "amphitheatre", "amphitheater", "grand amphithéâtre", "قاعة محاضرات", "مدرج", "amphithéâtre"],
+        "classroom": ["classroom", "salle de classe", "class", "classe", "salle", "قاعة", "فصل","قسم", "salle de cours"],
+        "lab": ["lab", "laboratory", "laboratoire", "tp", "travaux pratiques", "مختبر", "معمل", "salle de travaux"],
     }
 
     def __init__(self, ollama_provider: Optional[OllamaProvider] = None):
         self.llm = ollama_provider
 
     def _build_prompt(self, text: str, today: date) -> str:
-        return f"""You are an expert at extracting classroom search criteria from natural language requests in English, French, and Arabic.
+        return f"""You are a multilingual expert in classroom booking systems.
+        You MUST handle requests in English, French, and Arabic equally well.
 
-Today is {today.isoformat()}.
+        Today is {today.isoformat()}.
 
-Extract the following fields from the user's request. Return ONLY a JSON object with these exact keys:
-- date: ISO date string (YYYY-MM-DD) or null
-- start_time: HH:MM 24-hour format or null
-- end_time: HH:MM 24-hour format or null
-- student_count: integer or null
-- required_equipment: array of strings (standardized: projector, whiteboard, computer, audio, video_conference, ac) or empty array
-- room_type: one of "lecture", "classroom", "lab" or null
-- preferences: array of strings or empty array
+        Extract the following fields from the user's request.
+        Room types:
+        - "lecture" (for amphi, auditorium, lecture halls, grand amphithéâtre, salle de cours, salle de conférence)
+        - "classroom" (for standard rooms, salle de classe, salle, salle de classe, salle de cours, classe)
+        - "lab" (for labs, laboratoire, laboratoire, tp, travaux pratiques, laboratoire, salle de travaux, laboratoire)
 
-Rules:
-- Resolve relative dates: "tomorrow" = {today + timedelta(days=1)}, "next week" = week starting {today + timedelta(days=(7-today.weekday()))}
-- If a time range is given like "10 to 12", split into start_time and end_time
-- Equipment names must match the standardized list exactly
-- If information is missing or ambiguous, use null
-- Output ONLY the JSON, no extra text, no code blocks, no markdown formatting
-- Do not wrap the JSON in triple backticks or any formatting
-- Do not include any additional text or explanation, only the raw JSON object
+        Extract the following fields from the user's request.
+        Return ONLY a JSON object with these exact keys:
+        - date: ISO date string (YYYY-MM-DD) or null
+        - start_time: HH:MM 24-hour format or null
+        - end_time: HH:MM 24-hour format or null
+        - student_count: integer or null
+        - required_equipment: array of strings (standardized: projector, whiteboard, computer, audio, video_conference, ac) or empty array
+        - room_type: one of "lecture", "classroom", "lab" or null
+        - preferences: array of strings or empty array
 
-Examples:
-Input: "Find a room tomorrow from 10 to 12 for 35 students with a projector."
-Output: {{"date": "{(today + timedelta(days=1)).isoformat()}", "start_time": "10:00", "end_time": "12:00", "student_count": 35, "required_equipment": ["projector"], "room_type": null, "preferences": []}}
+        Rules:
+        - Resolve relative dates: "tomorrow" = {today + timedelta(days=1)}, "next week" = week starting {today + timedelta(days=(7-today.weekday()))}
+        - If a time range is given like "10 to 12", split into start_time and end_time
+        - Equipment names must match the standardized list exactly
+        - If information is missing or ambiguous, use null
+        - Output ONLY the JSON, no extra text, no code blocks, no markdown formatting
+        - Do not wrap the JSON in triple backticks or any formatting
+        - Do not include any additional text or explanation, only the raw JSON object
 
-Input: "Je cherche une salle demain de 14h à 16h pour 20 étudiants avec un tableau blanc."
-Output: {{"date": "{(today + timedelta(days=1)).isoformat()}", "start_time": "14:00", "end_time": "16:00", "student_count": 20, "required_equipment": ["whiteboard"], "room_type": null, "preferences": []}}
+        Examples:
+        Input: "Find a room tomorrow from 10 to 12 for 35 students with a projector."
+        Output: {{"date": "{(today + timedelta(days=1)).isoformat()}", "start_time": "10:00", "end_time": "12:00", "student_count": 35, "required_equipment": ["projector"], "room_type": null, "preferences": []}}
 
-Input: "أحتاج قاعة بعد غد من 10 إلى 12 لـ 30 طالب مع جهاز عرض."
-Output: {{"date": "{(today + timedelta(days=2)).isoformat()}", "start_time": "10:00", "end_time": "12:00", "student_count": 30, "required_equipment": ["projector"], "room_type": null, "preferences": []}}
+        Input: "Je cherche une salle demain de 14h à 16h pour 20 étudiants avec un tableau blanc."
+        Output: {{"date": "{(today + timedelta(days=1)).isoformat()}", "start_time": "14:00", "end_time": "16:00", "student_count": 20, "required_equipment": ["whiteboard"], "room_type": "classroom", "preferences": []}}
 
-Now extract from:
-Input: {json.dumps(text, ensure_ascii=False)}
-Output:"""
+        Input: "أحتاج قاعة بعد غد من 10 إلى 12 لـ 30 طالب مع جهاز عرض."
+        Output: {{"date": "{(today + timedelta(days=2)).isoformat()}", "start_time": "10:00", "end_time": "12:00", "student_count": 30, "required_equipment": ["projector"], "room_type": "classroom", "preferences": []}}
+
+        Now extract from:
+        Input: {json.dumps(text, ensure_ascii=False)}
+        Output:"""
 
     def _parse_with_llm(self, text: str, today: date) -> Optional[SearchCriteria]:
         """Parse using local LLM."""
@@ -151,7 +158,6 @@ Output:"""
             return None
 
         # Try to find JSON in code fences
-        import re
         code_fence_match = re.search(r'```(?:json)?\s*(\{.*?\})\s*```', text, re.DOTALL)
         if code_fence_match:
             try:
@@ -187,8 +193,8 @@ Output:"""
 
         # Extract student count (numbers near students/étudiants/طالب)
         student_patterns = [
-            r'(?:for|pour|pour\s+|لـ|ل)\s*(\d+)\s*(?:students?|étudiants?|étudiant|طالب|طلاب)',
-            r'(\d+)\s*(?:students?|étudiants?|étudiant|طالب|طلاب)',
+            r'(?:for|pour|pour\s+|لـ|ل)\s*(\d+)\s*(?:students?|étudiants?|etudiants?|طالب|طلاب)',
+            r'(\d+)\s*(?:students?|étudiants?|etudiants?|طالب|طلاب)',
         ]
         for pattern in student_patterns:
             match = re.search(pattern, text_lower)
@@ -196,19 +202,22 @@ Output:"""
                 criteria.student_count = int(match.group(1))
                 break
 
-        # Extract time range
+        # Extract time range ("from 10 to 12", "10h à 12h", "14h a 16h", "12:30 to 14:00", "من 8 إلى 10")
         time_patterns = [
-            r'(?:from|de|من)\s*(\d{1,2})[:h]?\s*(?:to|à|إلى|-)\s*(\d{1,2})[:h]?',
-            r'(\d{1,2})[:h]\s*(?:to|à|إلى|-)\s*(\d{1,2})[:h]',
+            r'(?:from|de|من)\s*(\d{1,2})(?::(\d{2})|h(\d{2}))?(?:\s*(?:am|pm))?\s*(?:to|until|à|a|إلى|-|–)\s*(\d{1,2})(?::(\d{2})|h(\d{2}))?(?:\s*(?:am|pm))?(?!\d)',
+            r'(\d{1,2})(?::(\d{2})|h(\d{2}))?(?:\s*(?:am|pm))?\s*(?:to|until|à|a|إلى|-|–)\s*(\d{1,2})(?::(\d{2})|h(\d{2}))?(?:\s*(?:am|pm))?(?!\d)',
         ]
         for pattern in time_patterns:
             match = re.search(pattern, text_lower)
             if match:
                 start_h = int(match.group(1))
-                end_h = int(match.group(2))
-                criteria.start_time = time(start_h, 0)
-                criteria.end_time = time(end_h, 0)
-                break
+                start_min = int(match.group(2) or match.group(3) or 0)
+                end_h = int(match.group(4))
+                end_min = int(match.group(5) or match.group(6) or 0)
+                if 0 <= start_h <= 23 and 0 < end_h <= 24:
+                    criteria.start_time = time(start_h, start_min)
+                    criteria.end_time = time(end_h % 24, end_min)
+                    break
 
         # Extract date
         if "tomorrow" in text_lower or "demain" in text_lower or "غداً" in text_lower or "غدا" in text_lower:
@@ -218,7 +227,9 @@ Output:"""
         elif "today" in text_lower or "aujourd'hui" in text_lower or "اليوم" in text_lower:
             criteria.session_date = today
         else:
-            # Try to extract ISO date or day name
+            # Default to today if no date specified
+            criteria.session_date = today
+            # Try to extract ISO date or day name (optional override)
             iso_date_match = re.search(r'\b(202\d-\d{2}-\d{2})\b', text_lower)
             if iso_date_match:
                 criteria.session_date = date.fromisoformat(iso_date_match.group(1))
@@ -298,87 +309,3 @@ Output:"""
             preferences=list(set((llm_result.preferences or []) + (det_result.preferences or []))),
             raw_text=text,
         )
-=======
-import datetime
-import re
-from collections.abc import Sequence
-from dataclasses import dataclass
-
-MAX_TEXT_LENGTH = 500  # contract D13; text is cut before any regex runs (rule S14b)
-SLOTS = ("date", "start_time", "end_time", "student_count")
-
-ARABIC_LETTER = re.compile("[\u0600-\u06ff]")
-STUDENT_COUNT = re.compile(r"(\d{1,4})\s*(?:students|etudiants|étudiants|طلاب|طالب)")
-PROJECTOR_WORDS = ("projector", "projecteur", "جهاز عرض")
-
-TEXT_UNCLEAR = {
-    "en": "I could not read a request in this text. Fill in the form below.",
-    "fr": "Je n'ai pas pu lire de demande dans ce texte. Remplissez le formulaire ci-dessous.",
-    "ar": "لم أتمكن من قراءة طلب في هذا النص. املأ النموذج أدناه.",
-}
-
-
-@dataclass(frozen=True)
-class Criteria:
-    date: str | None = None  # "YYYY-MM-DD"
-    start_time: str | None = None  # "HH:MM"
-    end_time: str | None = None
-    student_count: int | None = None
-    required_equipment: tuple[str, ...] = ()
-    preferred_equipment: tuple[str, ...] = ()
-    room_type: str | None = None
-    preferred_building: str | None = None
-
-
-@dataclass(frozen=True)
-class Clarification:
-    field: str  # date | start_time | end_time | student_count | equipment | text
-    code: str  # see contract 6.4
-    message: str  # in the request language
-
-
-@dataclass(frozen=True)
-class ParseResult:
-    criteria: Criteria
-    missing: tuple[str, ...]
-    clarifications: tuple[Clarification, ...]
-    language: str  # en | fr | ar
-    engine: str  # "rules"
-
-
-def find_student_count(text: str) -> int | None:
-    hit = STUDENT_COUNT.search(text)
-    if hit is None:
-        return None
-    count = int(hit.group(1))
-    return count if 1 <= count <= 1000 else None
-
-
-def find_equipment(text: str) -> tuple[str, ...]:
-    if any(word in text for word in PROJECTOR_WORDS):
-        return ("projector",)
-    return ()
-
-
-# Step 1 stub: only student count and projector work. today and known_buildings
-# are accepted already so the signature never changes; they are used from Step 4.
-def parse_request(
-    text: str, today: datetime.date, known_buildings: Sequence[str] = ()
-) -> ParseResult:
-    if not isinstance(text, str):
-        text = ""
-    text = text[:MAX_TEXT_LENGTH].strip().lower()
-
-    language = "ar" if ARABIC_LETTER.search(text) else "en"
-    criteria = Criteria(
-        student_count=find_student_count(text),
-        required_equipment=find_equipment(text),
-    )
-
-    missing = tuple(slot for slot in SLOTS if getattr(criteria, slot) is None)
-    clarifications = ()
-    if not text:
-        clarifications = (Clarification("text", "text_unclear", TEXT_UNCLEAR[language]),)
-
-    return ParseResult(criteria, missing, clarifications, language, "rules")
->>>>>>> 61bfbd9e60e235fd6437d82e5264d78e6efb5b3f

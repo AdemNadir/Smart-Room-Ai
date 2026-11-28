@@ -1,0 +1,37 @@
+.page { max-inline-size: 60rem; margin-inline: auto; padding: var(--sp-4) var(--sp-4) var(--sp-8); }
+
+.bar {
+  position: sticky;
+  inset-block-start: var(--sp-3);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  padding: var(--sp-2) var(--sp-3) var(--sp-2) var(--sp-4);
+  border-radius: var(--r-pill);
+}
+.brand { display: flex; align-items: center; gap: var(--sp-3); font-weight: 650; font-size: var(--fs-md); }
+
+.hero { padding-block: var(--sp-7) var(--sp-6); display: grid; gap: var(--sp-3); }
+.hero h1 { font-size: clamp(var(--fs-xl), 5vw, var(--fs-2xl)); max-inline-size: 18ch; }
+.hero p { color: var(--c-ink-2); font-size: var(--fs-md); max-inline-size: 46ch; }
+
+.section { display: grid; gap: var(--sp-4); margin-block-start: var(--sp-7); }
+.section > h2 { font-size: var(--fs-lg); }
+.section > p { color: var(--c-ink-2); max-inline-size: 60ch; }
+
+.swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr)); gap: var(--sp-3); }
+.swatch { display: grid; gap: var(--sp-2); font-size: var(--fs-xs); color: var(--c-ink-2); }
+.chip { block-size: 3.5rem; border-radius: var(--r-md); border: 1px solid var(--c-line); }
+
+.row { display: flex; flex-wrap: wrap; gap: var(--sp-3); align-items: center; }
+.grid2 { display: grid; gap: var(--sp-4); grid-template-columns: repeat(auto-fit, minmax(min(16rem, 100%), 1fr)); }
+
+.room { display: grid; gap: var(--sp-4); }
+.roomHead { display: flex; justify-content: space-between; align-items: start; gap: var(--sp-3); }
+.roomHead h3 { font-size: var(--fs-lg); }
+.meta { color: var(--c-ink-2); margin-block-start: var(--sp-1); }
+.facts { display: flex; flex-wrap: wrap; gap: var(--sp-2); padding: 0; margin: 0; list-style: none; }
+.facts li { padding: 0.25rem 0.65rem; border-radius: var(--r-pill); background: var(--c-surface-sunken); font-size: var(--fs-xs); color: var(--c-ink-2); }
+.why { color: var(--c-ink-2); border-inline-start: 3px solid var(--c-accent); padding-inline-start: var(--sp-3); }
